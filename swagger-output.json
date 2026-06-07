@@ -1,0 +1,29 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PhonePe Clone API",
+    "version": "1.0.0",
+    "description": "API documentation for the PhonePe System built with using MERN stack, A simple PhonePe clone with features (Auth, Send Money, History)"
+  },
+  "servers": [
+    {
+        "url": "http://localhost:3000",
+        "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "Health check endpoint",
+        "responses": {
+          "200": {
+            "description": "Server is running"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  }
+}
