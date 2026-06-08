@@ -9,7 +9,7 @@ const generateUniqueUpiId = async (name) => {
 
   do {
     upiId = `${name.toLowerCase().replace(/\s/g, "")}${Math.floor(
-      1000 + Math.random() * 9000
+      1000 + Math.random() * 9000,
     )}@phonepe`;
 
     exists = await User.findOne({ upiId });
@@ -21,100 +21,118 @@ const generateUniqueUpiId = async (name) => {
 // Generate JWT Helper
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '1d',
+    expiresIn: "1d",
   });
 };
 
-
 export const registerUser = async (req, res) => {
-    
-    try {
-        const { name, email, phone, password } = req.body;
+  try {
+    const { name, email, phone, password } = req.body;
 
-        // Basic validation
-        if (!name || !email || !phone || !password) {
-            return res.status(400).json({ message: "All fields are required" });
-        }
-
-        // Check if user already exists
-        const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
-
-        if (existingUser) {
-            return res.status(400).json({ message: "User with this email or phone already exists" });
-        }
-
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // Dynamically generate UPI ID based on name and a random number
-        const upiId = await generateUniqueUpiId(name);
-
-        // Create new user
-        const user = await User.create({
-            name,
-            email,
-            phone,
-            password: hashedPassword,
-            upiId,
-        });
-
-        if(user) {
-            res.status(201).json({ 
-                message: "User registered successfully", 
-                user: {
-                    _id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone,
-                    upiId: user.upiId,
-                    balance: user.balance,
-                    hasMpinSet: false, // Since MPIN is not set during registration
-                    token: generateToken(user._id),
-                }
-            });
-        } else {
-            res.status(400).json({ message: "Failed to register user" });
-        };
+    // Basic validation
+    if (!name || !email || !phone || !password) {
+      return res.status(400).json({ message: "All fields are required" });
     }
-    catch(err) {
-        res.status(500).json({ message: err.message });
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: "User with this email or phone already exists" });
     }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Dynamically generate UPI ID based on name and a random number
+    const upiId = await generateUniqueUpiId(name);
+
+    // Create new user
+    const user = await User.create({
+      name,
+      email,
+      phone,
+      password: hashedPassword,
+      upiId,
+    });
+
+    if (user) {
+      res.status(201).json({
+        message: "User registered successfully",
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          upiId: user.upiId,
+          balance: user.balance,
+          hasMpinSet: false, // Since MPIN is not set during registration
+          token: generateToken(user._id),
+        },
+      });
+    } else {
+      res.status(400).json({ message: "Failed to register user" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 export const loginUser = async (req, res) => {
-    try {
-        const {email, password} = req.body;
+  try {
+    const { email, password } = req.body;
 
-        // All fields are required
-        if(!email || !password) {
-            return res.status(400).json({ message: "Email and password are required" });
-        }
-
-        // Check if user exists
-        const user = await User.findOne({ email });
-
-        if(!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({ message: "Invalid email or password" });
-        }
-
-        // Generate JWT token
-        const token = generateToken(user._id);
-
-        res.status(200).json({
-            message: "Login successful",
-            user: {
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                upiId: user.upiId,
-                balance: user.balance,
-                hasMpinSet: !!user.mpin, // Check if MPIN is set
-                token
-            }
-        });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+    // All fields are required
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // Generate JWT token
+    const token = generateToken(user._id);
+
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        upiId: user.upiId,
+        balance: user.balance,
+        hasMpinSet: !!user.mpin, // Check if MPIN is set
+        token,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password -mpin");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const responseUser = user.toObject();
+    responseUser.hasMpinSet = !!user.mpin; // Add hasMpinSet field to indicate if MPIN is set
+
+    res.status(200).json({ responseUser });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
