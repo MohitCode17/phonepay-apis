@@ -139,6 +139,47 @@
           }
         }
       }
+    },
+    "/api/auth/set-mpin": {
+      "post": {
+        "description": "Set or update MPIN for the user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mpin": {
+                    "type": "string",
+                    "example": "1234"
+                  }
+                },
+                "required": ["mpin"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "MPIN set/updated successfully"
+          },
+          "400": {
+            "description": "Bad request - validation errors"
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing token"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   }
 }
