@@ -136,3 +136,31 @@ export const getUserProfile = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const setMpin = async (req, res) => {
+  try {
+    const { mpin } = req.body;
+
+    if (!mpin || mpin.length !== 4 || !/^\d{4}$/.test(mpin)) {
+      return res.status(400).json({ message: "MPIN is required and must be a 4-digit number" });
+    }
+
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Hash the MPIN
+    const salt = await bcrypt.genSalt(10);
+    const hashedMpin = await bcrypt.hash(mpin, salt);
+
+    // Update the user's MPIN
+    user.mpin = hashedMpin;
+    await user.save();
+
+    res.status(200).json({ message: "MPIN set successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
