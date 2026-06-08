@@ -81,3 +81,40 @@ export const registerUser = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+export const loginUser = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+
+        // All fields are required
+        if(!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
+
+        // Check if user exists
+        const user = await User.findOne({ email });
+
+        if(!user || !(await bcrypt.compare(password, user.password))) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        // Generate JWT token
+        const token = generateToken(user._id);
+
+        res.status(200).json({
+            message: "Login successful",
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                upiId: user.upiId,
+                balance: user.balance,
+                hasMpinSet: !!user.mpin, // Check if MPIN is set
+                token
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
