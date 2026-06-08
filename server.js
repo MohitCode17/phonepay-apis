@@ -5,12 +5,18 @@ import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import connectDB from "./src/config/db.js";
 
+// Import Routes
+import authRoutes from "./src/routes/authRoutes.js";
+
 import swaggerDocument from "./swagger-output.json" with { type: "json" };
 
 const app = express();
 connectDB();
 
-const port = process.env.PORT || 3000;
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Api docs route
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -19,6 +25,11 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get("/", (req, res) => {
   res.send("PhonePe Backend System is running!");
 });
+
+// App Routes
+app.use("/api/auth", authRoutes);
+
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log(`Server running at port http://localhost:${port}`);
