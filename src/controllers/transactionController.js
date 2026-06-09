@@ -9,7 +9,7 @@ import User from "../models/User.js";
 export const sendMoney = async (req, res) => {
   try {
     const { receiverIdentifier, amount, mpin } = req.body; // Identifier can be phone number or UPI ID
-    
+
     const senderId = req.user._id;
 
     if (!mpin) {
@@ -83,5 +83,22 @@ export const sendMoney = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+export const getTransactionHistory = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const transactions = await Transaction.find({
+      $or: [{ sender: userId }, { receiver: userId }],
+    })
+      .populate("sender", "name phone upiId")
+      .populate("receiver", "name phone upiId")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ transactions });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
