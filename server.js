@@ -7,6 +7,7 @@ import connectDB from "./src/config/db.js";
 
 // Import Routes
 import authRoutes from "./src/routes/authRoutes.js";
+import transactionRoutes from "./src/routes/transactionRoutes.js";
 
 import swaggerDocument from "./swagger-output.json" with { type: "json" };
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 
 // App Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/transactions", transactionRoutes);
 
 const port = process.env.PORT || 3000;
 
