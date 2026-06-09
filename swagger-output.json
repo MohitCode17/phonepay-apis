@@ -180,6 +180,58 @@
           }
         }
       }
+    },
+    "/api/transactions/send": {
+      "post": {
+        "description": "Send money to another user via phone number or UPI ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "receiverIdentifier": {
+                    "type": "string",
+                    "example": "mohit6104@phonepe"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 500
+                  },
+                  "mpin": {
+                    "type": "string",
+                    "example": "1234"
+                  }
+                },
+                "required": ["receiverIdentifier", "amount", "mpin"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Money sent successfully"
+          },
+          "400": {
+            "description": "Bad request - validation errors or insufficient balance"
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing token, or incorrect MPIN"
+          },
+          "404": {
+            "description": "Recipient not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   }
 }
