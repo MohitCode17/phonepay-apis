@@ -253,6 +253,96 @@
           }
         }
       }
+    },
+    "/api/wallet/add-money": {
+      "post": {
+        "description": "Add money to the wallet using a payment method",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "example": 1000
+                  }
+                },
+                "required": ["amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Money added to wallet successfully"
+          },
+          "400": {
+            "description": "Bad request - validation errors"
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing token"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/wallet/pay-bill": {
+      "post": {
+        "description": "Pay a bill using the wallet balance",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "billerName": {
+                    "type": "string",
+                    "example": "Electricity Board"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 1500
+                  },
+                  "mpin": {
+                    "type": "string",
+                    "example": "1234"
+                  }
+                },
+                "required": ["billerName", "amount", "mpin"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bill paid successfully"
+          },
+          "400": {
+            "description": "Bad request - validation errors or insufficient balance"
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing token, or incorrect MPIN"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   }
 }
