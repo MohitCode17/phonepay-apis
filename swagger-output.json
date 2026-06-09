@@ -232,6 +232,27 @@
           }
         }
       }
+    },
+    "/api/transactions/history": {
+      "get": {
+        "description": "Get transaction history for the authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction history retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing token"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   }
 }
