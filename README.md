@@ -97,8 +97,8 @@ phonepe-backend/
 ### 1. Clone the repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd phonepe-clone-backend
+git clone <git@github.com:MohitCode17/phonepay-apis.git>
+cd phonepe-backend
 ```
 
 ### 2. Install dependencies
