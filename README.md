@@ -1,56 +1,30 @@
-# PhonePe Clone — Backend API
+# Digital Wallet Backend API (PhonePe-inspired)
 
-A beginner-level backend project inspired by digital wallet applications, built to learn REST API development, authentication, database modeling, wallet operations, and transaction management using Node.js and Express.
+A beginner-level backend project inspired by digital wallet apps, built to learn REST API development, authentication, database modeling, wallet operations, and transaction handling with Node.js, Express, and MongoDB.
 
-> **Project Status:** Learning / Demo Project  
-> This project was built as my first backend learning project. It demonstrates core backend concepts and is not production-ready. It does not integrate with real banking infrastructure, UPI networks, or payment gateways.
+> **Project status:** Learning / demo project.
+> This was backend project. It demonstrates core backend concepts and is not production-ready. It does not integrate with real banking infrastructure, UPI networks, or payment gateways.
 
 ## Overview
 
-The PhonePe Clone Backend provides APIs for user authentication, wallet balance management, simulated money transfers, bill payments, and transaction history.
-
-The project helped me understand how backend routes, controllers, middleware, database models, and authentication work together to build a RESTful application.
+The API supports user authentication, wallet balance management, simulated money transfers, bill payments, and transaction history. Building it taught me how routes, controllers, middleware, models, and authentication fit together in a REST application.
 
 ## Features
 
-- **User Authentication**
-  - User registration and login.
-  - JWT-based authentication.
-  - Protected API routes.
-  - Password hashing using bcrypt.
-
-- **User Profile**
-  - Retrieve the authenticated user's profile.
-  - Generate a unique UPI-style ID during registration.
-  - Set an MPIN for transaction verification.
-
-- **Wallet Management**
-  - Add demo funds to a wallet.
-  - Pay bills using the wallet balance.
-  - Validate available balance before payments.
-
-- **Money Transfers**
-  - Transfer demo funds using a registered phone number or UPI-style ID.
-  - Verify the sender's MPIN.
-  - Prevent self-transfers.
-  - Maintain transaction records.
-
-- **Transaction History**
-  - Retrieve transactions involving the authenticated user.
-  - View sender and receiver details.
-  - Sort transactions by creation date.
-
-- **API Documentation**
-  - Swagger UI for exploring and testing API endpoints.
+- **Authentication:** registration, login, JWT-protected routes, bcrypt password hashing.
+- **User profile:** fetch the authenticated user's profile, generate a unique UPI-style ID at registration, set an MPIN for transaction verification.
+- **Wallet:** add demo funds, pay bills from the wallet, check available balance before payments.
+- **Money transfers:** send demo funds by phone number or UPI-style ID, verify the sender's MPIN, block self-transfers, record every transaction.
+- **Transaction history:** list transactions where the user is sender or receiver, newest first, with sender and receiver details.
+- **API documentation:** Swagger UI for exploring and testing endpoints.
 
 ## Tech Stack
 
 | Technology | Purpose |
 |---|---|
 | Node.js | JavaScript runtime |
-| Express.js | REST API development |
-| MongoDB | Database |
-| Mongoose | Database modeling and queries |
+| Express.js | REST API framework |
+| MongoDB + Mongoose | Database and data modeling |
 | JSON Web Token (JWT) | Authentication |
 | bcryptjs | Password and MPIN hashing |
 | Swagger UI / OpenAPI | API documentation |
@@ -60,45 +34,42 @@ The project helped me understand how backend routes, controllers, middleware, da
 ## Project Structure
 
 ```text
-phonepe-backend/
+phonepay-apis/
 ├── server.js
 ├── swagger-output.json
-├── src/
-│   ├── config/
-│   │   └── db.js
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   ├── walletController.js
-│   │   └── transactionController.js
-│   ├── middlewares/
-│   │   └── authMiddleware.js
-│   ├── models/
-│   │   ├── User.js
-│   │   └── Transaction.js
-│   └── routes/
-│       ├── authRoutes.js
-│       ├── walletRoutes.js
-│       └── transactionRoutes.js
-├── .env
+├── package.json
+├── package-lock.json
 ├── .gitignore
-└── package.json
+└── src/
+    ├── config/
+    │   └── db.js
+    ├── controllers/
+    │   ├── authController.js
+    │   ├── walletController.js
+    │   └── transactionController.js
+    ├── middlewares/
+    │   └── authMiddleware.js
+    ├── models/
+    │   ├── User.js
+    │   └── Transaction.js
+    └── routes/
+        ├── authRoutes.js
+        ├── walletRoutes.js
+        └── transactionRoutes.js
 ```
-
-*The structure above represents the intended organization; adjust file and folder names to match the actual repository.*
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js and npm installed.
-- A MongoDB instance, either local or hosted.
-- Git (optional, for cloning the repository).
+- Node.js and npm
+- A MongoDB instance, local or hosted (for example MongoDB Atlas)
 
 ### 1. Clone the repository
 
 ```bash
-git clone <git@github.com:MohitCode17/phonepay-apis.git>
-cd phonepe-backend
+git clone https://github.com/MohitCode17/phonepay-apis.git
+cd phonepay-apis
 ```
 
 ### 2. Install dependencies
@@ -117,7 +88,7 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_long_random_secret
 ```
 
-Use your own MongoDB connection string and a strong, private JWT secret. Never commit your `.env` file or real credentials to GitHub.
+Use your own MongoDB connection string and a long, random JWT secret. `.env` is listed in `.gitignore`; never commit it or any real credentials.
 
 ### 4. Start the server
 
@@ -125,43 +96,43 @@ Use your own MongoDB connection string and a strong, private JWT secret. Never c
 node server.js
 ```
 
-The application uses ES module imports. Ensure your `package.json` is configured accordingly.
+The project uses ES module imports, so `package.json` must contain `"type": "module"`.
 
-If the server starts successfully, the default local URLs are:
+When the server starts successfully:
 
-- **Base URL:** `http://localhost:3000`
-- **API Documentation:** `http://localhost:3000/api-docs`
+- Base URL: `http://localhost:3000`
+- Swagger docs: `http://localhost:3000/api-docs`
 
-The MongoDB connection must succeed for database-dependent endpoints to work.
+The MongoDB connection must succeed for database-backed endpoints to work.
 
 ## API Endpoints
 
-All endpoints use the `/api` prefix unless otherwise specified.
+All endpoints use the `/api` prefix.
 
 ### Authentication
 
 | Method | Endpoint | Description | Access |
 |---|---|---|---|
 | POST | `/api/auth/register` | Register a new user | Public |
-| POST | `/api/auth/login` | Authenticate a user | Public |
-| GET | `/api/auth/profile` | Retrieve the current user's profile | Protected |
-| POST | `/api/auth/set-mpin` | Set or update the user's MPIN | Protected |
+| POST | `/api/auth/login` | Log in and receive a JWT | Public |
+| GET | `/api/auth/profile` | Get the current user's profile | Protected |
+| POST | `/api/auth/set-mpin` | Set or update the MPIN | Protected |
 
 ### Wallet
 
 | Method | Endpoint | Description | Access |
 |---|---|---|---|
 | POST | `/api/wallet/add-money` | Add simulated funds to the wallet | Protected |
-| POST | `/api/wallet/pay-bill` | Pay a demo bill using wallet funds | Protected |
+| POST | `/api/wallet/pay-bill` | Pay a demo bill from the wallet | Protected |
 
 ### Transactions
 
 | Method | Endpoint | Description | Access |
 |---|---|---|---|
 | POST | `/api/transactions/send` | Transfer demo funds to another user | Protected |
-| GET | `/api/transactions/history` | Retrieve transaction history | Protected |
+| GET | `/api/transactions/history` | Get transaction history | Protected |
 
-**Protected endpoints:** Send the JWT returned by registration or login in the request header:
+Protected endpoints need the JWT from registration or login in the request header:
 
 ```http
 Authorization: Bearer YOUR_JWT_TOKEN
@@ -169,9 +140,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ### Example Requests
 
-#### Register a user
-
-`POST /api/auth/register`
+**Register** — `POST /api/auth/register`
 
 ```json
 {
@@ -182,9 +151,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 }
 ```
 
-#### Log in
-
-`POST /api/auth/login`
+**Log in** — `POST /api/auth/login`
 
 ```json
 {
@@ -193,11 +160,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 }
 ```
 
-#### Set an MPIN
-
-`POST /api/auth/set-mpin`
-
-Requires authentication.
+**Set an MPIN** — `POST /api/auth/set-mpin` (authenticated)
 
 ```json
 {
@@ -205,11 +168,7 @@ Requires authentication.
 }
 ```
 
-#### Add demo funds
-
-`POST /api/wallet/add-money`
-
-Requires authentication.
+**Add demo funds** — `POST /api/wallet/add-money` (authenticated)
 
 ```json
 {
@@ -217,13 +176,9 @@ Requires authentication.
 }
 ```
 
-**Note:** This endpoint directly increases the stored wallet balance. It does not verify a real payment.
+This endpoint directly increases the stored balance. It does not verify a real payment.
 
-#### Send demo money
-
-`POST /api/transactions/send`
-
-Requires authentication and a previously configured MPIN.
+**Send demo money** — `POST /api/transactions/send` (authenticated, MPIN required)
 
 ```json
 {
@@ -235,11 +190,7 @@ Requires authentication and a previously configured MPIN.
 
 The receiver identifier must match a registered user's phone number or generated UPI-style ID.
 
-#### Pay a demo bill
-
-`POST /api/wallet/pay-bill`
-
-Requires authentication and a configured MPIN.
+**Pay a demo bill** — `POST /api/wallet/pay-bill` (authenticated, MPIN required)
 
 ```json
 {
@@ -249,71 +200,41 @@ Requires authentication and a configured MPIN.
 }
 ```
 
-#### Get transaction history
+**Transaction history** — `GET /api/transactions/history` (authenticated)
 
-`GET /api/transactions/history`
-
-Requires authentication. Returns transactions where the authenticated user is the sender or receiver.
-
-For interactive API testing, use the Swagger documentation available at `/api-docs`.
+Returns transactions where the authenticated user is the sender or receiver. You can try every endpoint interactively in Swagger at `/api-docs`.
 
 ## Database Models
 
-### User
+**User:** name, email, phone, hashed password, generated UPI-style ID, hashed MPIN (once set), wallet balance, timestamps.
 
-The user model includes:
+**Transaction:** sender and optional receiver references, type (`TRANSFER`, `ADD_MONEY`, `WITHDRAW`, `BILL_PAYMENT`), amount, status (`PENDING`, `COMPLETED`, `FAILED`), optional biller name, timestamps.
 
-- Name, email, and phone number.
-- Hashed password.
-- Generated UPI-style ID.
-- Hashed MPIN, when configured.
-- Wallet balance.
-- Creation and update timestamps.
+## What I Learned
 
-### Transaction
-
-The transaction model records:
-
-- Sender and optional receiver references.
-- Transaction type: `TRANSFER`, `ADD_MONEY`, `WITHDRAW`, or `BILL_PAYMENT`.
-- Amount and transaction status.
-- Optional biller name.
-- Creation and update timestamps.
-
-The supported statuses are `PENDING`, `COMPLETED`, and `FAILED`.
-
-## Important Learning Outcomes
-
-Through this project, I gained practical experience with:
-
-- Designing RESTful API endpoints.
+- Designing RESTful endpoints and returning correct HTTP status codes.
 - Separating routes, controllers, middleware, and models.
 - Implementing JWT authentication and protected routes.
-- Hashing sensitive credentials with bcrypt.
-- Modeling relationships using MongoDB and Mongoose.
-- Validating wallet operations and maintaining transaction history.
-- Handling HTTP status codes and API errors.
-- Documenting APIs with Swagger/OpenAPI.
+- Hashing passwords and MPINs with bcrypt.
+- Modeling related data with MongoDB and Mongoose.
+- Validating wallet operations and keeping a transaction history.
+- Documenting an API with Swagger/OpenAPI.
 
-## Limitations and Future Improvements
+## Known Limitations
 
-This is an educational project, and several production-level concerns have not been addressed.
+This is an educational project. The current implementation does **not** guarantee atomic financial operations and must not be used with real money.
 
-Potential improvements include:
+Not yet addressed:
 
-- Add comprehensive request validation and centralized error handling.
-- Use MongoDB transactions to keep wallet updates and transaction records consistent.
-- Prevent race conditions during concurrent transfers.
-- Introduce rate limiting, stricter authentication controls, and audit logging.
-- Add automated unit and integration tests.
-- Implement proper idempotency and transaction reconciliation.
-- Integrate a legitimate payment provider for verified wallet top-ups.
-- Improve financial data handling, monitoring, and operational security.
+- Wallet updates and transaction records are not wrapped in a database transaction, so a failure midway can leave them inconsistent.
+- Concurrent transfers can cause race conditions.
+- There is no idempotency handling, so a retried request can be processed twice.
+- Request validation and centralized error handling are minimal.
+- There is no rate limiting, audit logging, or automated test suite.
+- Wallet top-ups are not verified through a payment provider.
 
-**Important:** Wallet balances are simulated application data. The current implementation does not guarantee atomic financial operations and must not be used to handle real money or sensitive financial transactions.
+I am addressing the consistency, concurrency, and idempotency items in a separate PostgreSQL-based ledger project.
 
 ## Disclaimer
 
-This project is an independent educational clone inspired by digital wallet applications. It is not affiliated with, endorsed by, or connected to PhonePe. It does not implement actual UPI payments, banking services, or real-money transfers.
-
-Built for learning backend development with Node.js, Express.js, and MongoDB.
+This is an independent educational project inspired by digital wallet apps. It is not affiliated with, endorsed by, or connected to PhonePe, and it does not implement real UPI payments, banking services, or money transfers.
